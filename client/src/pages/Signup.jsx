@@ -1,8 +1,53 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
+import { useState } from 'react';
+
 
 function Signup() {
+
+  const [formData, setFormData] = useState({});
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    console.log(formData);
+      setFormData({
+      ...formData,
+      [e.target.id]: e.target.value
+    });
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try{
+    setLoading(true);
+    setError(null);
+    const res = await fetch ("api/auth/signup", {
+      method : "POST",
+      headers : {
+        "Content-Type" : "application/json"
+      },
+      body : JSON.stringify(formData)
+    });
+    const data = await res.json();
+
+    if(!res.ok){
+      setError(data.message || "Failed to sign up");
+      setLoading(false);
+      return;
+    }
+    setFormData({});
+    setLoading(false);
+    console.log(data);
+    navigate("/signin");
+  }
+catch(error){
+  setError("An error occurred. Please try again.");
+  setLoading(false);}
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
 
@@ -16,31 +61,44 @@ function Signup() {
           Join Los Santos Estates today
         </p>
 
-        <form className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
 
           <input
             type="text"
             placeholder="Username"
             className="border border-slate-300 p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 transition-all"
+            id='username'
+            onChange={handleChange}
+            required
+            value={formData.username || ''}
           />
 
           <input
             type="email"
             placeholder="Email"
             className="border border-slate-300 p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-all"
+            id='email'
+            onChange={handleChange}
+            required
+            value={formData.email || ''}
           />
 
           <input
             type="password"
             placeholder="Password"
             className="border border-slate-300 p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 transition-all"
+            id='password'
+            onChange={handleChange}
+            required
+            value={formData.password || ''}
           />
 
           <button
             type="submit"
             className="bg-green-600 text-white py-4 rounded-xl font-semibold tracking-wide hover:bg-green-700 hover:scale-[1.02] transition-all duration-300 shadow-lg"
+            disabled={loading}
           >
-            SIGN UP
+            {loading ? "Signing Up..." : "SIGN UP"}
           </button>
         </form>
 
@@ -66,6 +124,12 @@ function Signup() {
             Sign In
           </Link>
         </p>
+
+        {error && (
+        <p className="text-red-500 text-center mt-2">
+        {error}
+        </p> 
+        )}
 
       </div>
     </div>
