@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
+import { useDispatch , useSelector} from 'react-redux';
+import { signInStart,signInFailiure,signInSuccess } from '../redux/user/userSlice';
 
 function Signin() {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector(
+    (state) => state.user
+  );
 
   const handleChange = (e) => {
     setFormData({
@@ -20,9 +25,8 @@ function Signin() {
     e.preventDefault();
 
     try {
-      setLoading(true);
-      setError(null);
-
+      dispatch(signInStart());
+       
       const res = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: {
@@ -34,17 +38,15 @@ function Signin() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || 'Failed to sign in');
-        setLoading(false);
+        dispatch(signInFailiure(data.message))
         return;
       }
       console.log("Login successful", data);
-      setLoading(false);
+      dispatch(signInSuccess(data))
       navigate('/');
 
     } catch (error) {
-      setError('An error occurred. Please try again.');
-      setLoading(false);
+      dispatch(signInFailiure(error.message))
     }
   };
 
