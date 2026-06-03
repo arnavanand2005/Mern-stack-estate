@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 export default function Header() {
   return (
-    <header className="bg-slate-300 shadow-md">
+    <header className="bg-slate-200 shadow-md">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
 
         <Link
