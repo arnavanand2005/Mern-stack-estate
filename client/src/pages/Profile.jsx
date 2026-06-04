@@ -7,7 +7,7 @@ function Profile() {
   return (
     <div className="max-w-lg mx-auto p-6">
     <h1 className="text-3xl font-semibold text-slate-700 text-center my-7">
-      Profile
+      YOUR PROFILE
     </h1>
   
     <form className="flex flex-col gap-4 bg-white p-6 rounded-2xl shadow-md">
