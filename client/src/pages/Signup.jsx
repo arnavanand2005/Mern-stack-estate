@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FcGoogle } from 'react-icons/fc';
 import { useState } from 'react';
-
+import Oauth from '../Components/Oauth';
 
 function Signup() {
 
@@ -103,17 +102,12 @@ catch(error){
         </form>
 
         <div className="flex items-center my-6">
-          <div className="flex-grow h-px bg-slate-300"></div>
+          <div className="grow h-px bg-slate-300"></div>
           <span className="px-3 text-slate-400 text-sm">OR</span>
-          <div className="flex-grow h-px bg-slate-300"></div>
+          <div className="grow h-px bg-slate-300"></div>
         </div>
 
-        <button
-          className="w-full flex items-center justify-center gap-3 bg-white border border-slate-300 py-4 rounded-xl font-medium hover:bg-slate-50 hover:scale-[1.02] transition-all duration-300 shadow-sm"
-        >
-          <FcGoogle size={24} />
-          Continue with Google
-        </button>
+       <Oauth/>
 
         <p className="text-center mt-6 text-slate-600">
           Already have an account?{' '}

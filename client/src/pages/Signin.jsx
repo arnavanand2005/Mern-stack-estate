@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FcGoogle } from 'react-icons/fc';
 import { useDispatch , useSelector} from 'react-redux';
 import { signInStart,signInFailiure,signInSuccess } from '../redux/user/userSlice';
+import Oauth from '../Components/Oauth';
 
 function Signin() {
   const [formData, setFormData] = useState({});
@@ -94,7 +94,7 @@ function Signin() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300"
+            className="w-full bg-linear-to-r from-green-500 to-green-600 text-white py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300"
           >
             {loading ? 'Signing In...' : 'SIGN IN'}
           </button>
@@ -110,21 +110,16 @@ function Signin() {
         )}
 
         <div className="flex items-center my-7">
-          <div className="flex-grow border-t border-slate-300"></div>
+          <div className="grow border-t border-slate-300"></div>
 
           <span className="px-4 text-slate-400 text-sm font-medium">
             OR
           </span>
 
-          <div className="flex-grow border-t border-slate-300"></div>
+          <div className="grow border-t border-slate-300"></div>
         </div>
 
-        <button
-          className="w-full flex items-center justify-center gap-3 bg-white border border-slate-200 py-4 rounded-xl font-medium shadow-sm hover:shadow-md hover:bg-slate-50 transition-all duration-300"
-        >
-          <FcGoogle size={24} />
-          Continue with Google
-        </button>
+        <Oauth/>
 
         <p className="text-center mt-6 text-slate-600">
           Don't have an account?{' '}
