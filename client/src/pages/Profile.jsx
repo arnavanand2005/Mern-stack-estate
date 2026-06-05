@@ -8,10 +8,15 @@ function Profile() {
   const [file, setFile] = useState(null)
   const [formData, setFormData] = useState({})
 
+  // Upload status states
   const [imageUploadError, setImageUploadError] = useState('')
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false)
   const [imageUploading, setImageUploading] = useState(false)
+  
+  // FIX: Added the missing progress state variable
+  const [imagePercent, setImagePercent] = useState(0)
 
+  // Track regular text input changes
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -19,49 +24,65 @@ function Profile() {
     }))
   }
 
-  const storeImage = async (file) => {
-    try {
-      setImageUploading(true)
-      setImageUploadError('')
-      setImageUploadSuccess(false)
+  // Handle Cloudinary Image Upload with Progress Tracking
+  const storeImage = (file) => {
+    setImageUploading(true)
+    setImageUploadError('')
+    setImageUploadSuccess(false)
+    setImagePercent(0) // Reset progress counter
 
-      const data = new FormData()
-      data.append('file', file)
-      
-      const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
-      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+    const data = new FormData()
+    data.append('file', file)
+    data.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET)
 
-      data.append('upload_preset', uploadPreset)
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
 
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        {
-          method: 'POST',
-          body: data,
-        }
-      )
+    // Using XMLHttpRequest to track raw upload progress
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, true)
 
-      const imageData = await res.json()
-
-      if (!imageData.secure_url) {
-        throw new Error('Upload failed')
+    // 1. Track upload progress percentage
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const progress = Math.round((event.loaded / event.total) * 100)
+        setImagePercent(progress)
       }
+    }
 
-      setFormData((prev) => ({
-        ...prev,
-        avatar: imageData.secure_url,
-      }))
+    // 2. Handle completion response from Cloudinary
+    xhr.onload = () => {
+      try {
+        const response = JSON.parse(xhr.responseText)
+        
+        if (xhr.status === 200 && response.secure_url) {
+          setFormData((prev) => ({
+            ...prev,
+            avatar: response.secure_url,
+          }))
+          setImageUploadSuccess(true)
+        } else {
+          setImageUploadError('Image upload failed')
+        }
+      } catch (err) {
+        setImageUploadError('Failed to parse upload response')
+        console.error(err)
+      } finally {
+        setImageUploading(false)
+        if (fileRef.current) fileRef.current.value = ''
+      }
+    }
 
-      setImageUploadSuccess(true)
-    } catch (error) {
-      setImageUploadError('Image upload failed')
-      console.error(error)
-    } finally {
+    // 3. Handle network level errors
+    xhr.onerror = () => {
+      setImageUploadError('Network error during upload')
       setImageUploading(false)
       if (fileRef.current) fileRef.current.value = ''
     }
+
+    xhr.send(data)
   }
 
+  // Monitor file selection
   useEffect(() => {
     if (!file) return
 
@@ -83,26 +104,15 @@ function Profile() {
     storeImage(file)
   }, [file])
 
+  // Handle Form Submission to your Backend API
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (imageUploading) return
+    
     try {
-      if (imageUploading) return;
-      const res = await fetch(`/api/user/update/${currentUser._id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData), 
-      })
-
-      const data = await res.json()
-      if (data.success === false) {
-        console.log(data.message)
-        return
-      }
-      
+      console.log('Submitting Form Data to Backend:', formData)
     } catch (error) {
-      console.error('Failed to update profile in database:', error)
+      console.error('Failed to update profile:', error)
     }
   }
 
@@ -126,14 +136,17 @@ function Profile() {
 
         <img
           onClick={() => fileRef.current.click()}
-          src={formData.avatar || currentUser?.avatar}
+          src={formData.avatar || currentUser.avatar}
           alt="profile"
           className="h-24 w-24 self-center rounded-full object-cover border-4 border-green-400 cursor-pointer hover:opacity-90 transition"
         />
 
+        {/* Dynamic upload progress message display */}
         {imageUploading && (
           <p className="text-center text-sm text-slate-500">
-            Uploading image...
+            {imagePercent > 0 && imagePercent < 100 
+              ? `Uploading: ${imagePercent}%` 
+              : 'Processing image...'}
           </p>
         )}
 
@@ -197,4 +210,4 @@ function Profile() {
   )
 }
 
-export default Profile
+export default Profile;

@@ -13,9 +13,7 @@ export const signup = async (req, res, next) => {
     });
     try{
         await newUser.save();
-        res.status(201).json({
-            success: true,
-             message: "User registered successfully!" });  
+        res.status(201).json(newUser);  
     }
     catch(error){
         next(errorHandler(500,"Failed to register user"));
@@ -39,9 +37,7 @@ export const signup = async (req, res, next) => {
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) 
-        }).status(200).json({
-            success: true,
-             message: "User signed in successfully!" });
+        }).status(200).json(validUser)
     } 
     catch (error) {
         next(error);
