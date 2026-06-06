@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch} from 'react-redux'
-import { updateUserStart, updateUserFailiure, updateUserSuccess } from '../redux/user/userSlice'
+import { updateUserStart, updateUserFailiure, updateUserSuccess, deleteUserFailure, deleteUserStart, deleteUserSuccess } from '../redux/user/userSlice'
 
 function Profile() {
   const { currentUser, loading, error } = useSelector((state) => state.user)
@@ -97,6 +97,27 @@ function Profile() {
 
     storeImage(file)
   }, [file])
+
+  const handleDeleteUser = async () => {
+    try {
+      dispatch(deleteUserStart());
+      
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: 'DELETE',
+      });
+      
+      const data = await res.json();
+      
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+
+      dispatch(deleteUserSuccess(data));
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -240,11 +261,11 @@ function Profile() {
       )}
 
       <div className="flex justify-between mt-6 px-2 text-sm font-medium">
-        <span className="text-rose-500 cursor-pointer hover:text-rose-600 hover:underline transition duration-200">
+        <span onClick={handleDeleteUser} className="text-rose-500 cursor-pointer hover:text-rose-600 hover:underline transition duration-200">
           Delete Account
         </span>
 
-        <span className="text-slate-500 cursor-pointer hover:text-slate-700 hover:underline transition duration-200">
+        <span className="text-rose-500 cursor-pointer hover:text-rose-600 hover:underline transition duration-200">
           Sign Out
         </span>
       </div>
