@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch} from 'react-redux'
-import { updateUserStart, updateUserFailiure, updateUserSuccess, deleteUserFailure, deleteUserStart, deleteUserSuccess } from '../redux/user/userSlice'
+import { updateUserStart, updateUserFailiure, updateUserSuccess, deleteUserFailure, deleteUserStart, deleteUserSuccess, signOutUserStart, signInFailiure, signInSuccess, signOutUserSuccess,signOutUserFailure } from '../redux/user/userSlice'
 
 function Profile() {
   const { currentUser, loading, error } = useSelector((state) => state.user)
@@ -146,6 +146,22 @@ function Profile() {
     }
   }
 
+  const handleSignOut =  async () => {
+    try {
+      dispatch(signOutUserStart())
+      const res = await fetch ('/api/auth/signout');
+      const data = await res.json()
+      if (data.success == false) {
+        dispatch(signOutUserFailure(data.message))
+        return;
+      }
+      dispatch(signOutUserSuccess())
+    }
+    catch (error){
+      dispatch(signOutUserFailure(error.message))
+    }
+  }
+
   return (
     <div className="max-w-md mx-auto p-6 my-10">
       <h1 className="text-3xl font-bold text-slate-800 text-center mb-8 tracking-tight">
@@ -253,7 +269,7 @@ function Profile() {
           Error: {error}
         </p>
       )}
-
+ 
       {updateSuccess && (
         <p className="text-center text-xs font-semibold text-emerald-600 bg-emerald-50 py-2 px-4 rounded-xl border border-emerald-100 mt-4 shadow-sm">
           ✓ Profile settings saved successfully!
@@ -265,7 +281,7 @@ function Profile() {
           Delete Account
         </span>
 
-        <span className="text-rose-500 cursor-pointer hover:text-rose-600 hover:underline transition duration-200">
+        <span onClick={handleSignOut} className="text-rose-500 cursor-pointer hover:text-rose-600 hover:underline transition duration-200">
           Sign Out
         </span>
       </div>
