@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch} from 'react-redux'
-import { updateUserStart, updateUserFailiure, updateUserSuccess, deleteUserFailure, deleteUserStart, deleteUserSuccess, signOutUserStart, signInFailiure, signInSuccess, signOutUserSuccess,signOutUserFailure } from '../redux/user/userSlice'
+import { updateUserStart, updateUserFailiure, updateUserSuccess, deleteUserFailure, deleteUserStart, deleteUserSuccess, signOutUserStart, signOutUserSuccess,signOutUserFailure } from '../redux/user/userSlice'
+import {Link} from 'react-router-dom'
+
 
 function Profile() {
   const { currentUser, loading, error } = useSelector((state) => state.user)
@@ -262,6 +264,14 @@ function Profile() {
         >
           {imageUploading ? 'Uploading Image...' : loading ? 'Saving Account Details...' : 'Save Changes'}
         </button>
+
+        <Link 
+          to={'/create-listing'}
+          className="inline-flex items-center justify-center text-center bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:bg-emerald-800 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200 tracking-wide uppercase text-sm border border-emerald-800"
+        >
+        Create Listing
+        </Link>
+        
       </form>
 
       {error && (
