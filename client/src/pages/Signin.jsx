@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch , useSelector} from 'react-redux';
-import { signInStart,signInFailiure,signInSuccess } from '../redux/user/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { signInStart, signInFailiure, signInSuccess } from '../redux/user/userSlice';
 import Oauth from '../Components/Oauth';
 
 function Signin() {
   const [formData, setFormData] = useState({});
-
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, error } = useSelector(
-    (state) => state.user
-  );
+  
+  const { loading, error } = useSelector((state) => state.user);
 
   const handleChange = (e) => {
     setFormData({
@@ -23,7 +20,6 @@ function Signin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       dispatch(signInStart());
        
@@ -35,23 +31,37 @@ function Signin() {
         body: JSON.stringify(formData),
       });
 
-      const data = await res.json();
+      // 1. SAFE CONTENT-TYPE PARSING: Prevents frontend from freezing if backend text data is malformed
+      const contentType = res.headers.get("content-type");
+      let data;
+      if (contentType && contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        const textData = await res.text();
+        data = { message: textData };
+      }
 
-      if (!res.ok) {
-        dispatch(signInFailiure(data.message))
+      // 2. ERROR STRUCTURAL EVALUATION: Catches custom Express middleware configurations
+      if (!res.ok || data.success === false) {
+        const errorMsg = data.message || "Authentication failed. Please check your credentials.";
+        dispatch(signInFailiure(errorMsg));
         return;
       }
+      
+      // 3. SUCCESS PIPELINE RUNTIME
       console.log("Login successful", data);
-      dispatch(signInSuccess(data))
+      dispatch(signInSuccess(data));
       navigate('/');
 
     } catch (error) {
-      dispatch(signInFailiure(error.message))
+      // 4. NETWORK FALLBACK: Handles proxy disconnects or server runtime failures
+      console.error("Frontend submit handler caught exception:", error);
+      dispatch(signInFailiure(error.message || "A local network interface connection error occurred."));
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 ">
+    <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white/70 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] rounded-3xl p-8 border border-white/60">
 
         <div className="text-center mb-8">
@@ -59,18 +69,12 @@ function Signin() {
             <span className="text-amber-500">Los Santos</span>{' '}
             <span className="text-green-600">Estates</span>
           </h2>
-
-          <p className="text-slate-500 mt-2">
-            Welcome back
-          </p>
+          <p className="text-slate-500 mt-2">Welcome back</p>
         </div>
 
-        <h1 className="text-3xl font-bold text-center text-slate-700 mb-6">
-          Sign In
-        </h1>
+        <h1 className="text-3xl font-bold text-center text-slate-700 mb-6">Sign In</h1>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-
           <input
             type="text"
             id="username"
@@ -98,28 +102,21 @@ function Signin() {
           >
             {loading ? 'Signing In...' : 'SIGN IN'}
           </button>
-
         </form>
 
         {error && (
           <div className="mt-4 rounded-lg bg-red-100 border border-red-200 p-3">
-            <p className="text-red-600 text-sm text-center">
-              {error}
-            </p>
+            <p className="text-red-600 text-sm text-center">{error}</p>
           </div>
         )}
 
         <div className="flex items-center my-7">
           <div className="grow border-t border-slate-300"></div>
-
-          <span className="px-4 text-slate-400 text-sm font-medium">
-            OR
-          </span>
-
+          <span className="px-4 text-slate-400 text-sm font-medium">OR</span>
           <div className="grow border-t border-slate-300"></div>
         </div>
 
-        <Oauth/>
+        <Oauth />
 
         <p className="text-center mt-6 text-slate-600">
           Don't have an account?{' '}
