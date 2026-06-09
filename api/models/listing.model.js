@@ -13,11 +13,11 @@ const listingSchema = new mongoose.Schema({
         type : String,
         required : true,
     },
-    regularprice : {
+    regularPrice : {
         type : Number,
         required : true,
     },
-    discountprice : {
+    discountedPrice : {
         type : Number,
         required : true,
     },
@@ -46,7 +46,7 @@ const listingSchema = new mongoose.Schema({
         required : true,
     }, 
     imageUrls : {
-        type : Array,
+        type : [String],
         required : true
     },
     userRef : {
