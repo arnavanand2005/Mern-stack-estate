@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 function CreateListing() {
   const [files, setFiles] = useState([]);
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
   
-  // Consolidated form state tracking all your listing parameter inputs
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  const navigate = useNavigate();
+  const { currentUser } = useSelector((state) => state.user);
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -14,14 +21,13 @@ function CreateListing() {
     bedrooms: 1,
     bathrooms: 1,
     regularPrice: 100,
-    discountedPrice: 0,
+    discountedPrice: 50,
     offer: false,
     parking: false,
     furnished: false,
     imageUrls: [], 
   });
 
-  // Track text fields, numerical changes, and booleans from checkbox clicks
   const handleChange = (e) => {
     if (e.target.id === 'sale' || e.target.id === 'rent') {
       setFormData({ ...formData, type: e.target.id });
@@ -36,7 +42,6 @@ function CreateListing() {
     }
   };
 
-  // Prepares file packages and coordinates concurrent uploads via Promise.all
   const handleImageSubmit = () => {
     if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
       setUploading(true);
@@ -66,15 +71,11 @@ function CreateListing() {
     }
   };
 
-  // Communication gateway using your .env values
   const uploadImageToCloudinary = async (file) => {
     const data = new FormData();
     data.append('file', file);
-    
-    // Grabbing your upload preset ("mern_estate") dynamically from your .env
     data.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET); 
     
-    // Merging your Cloud Name variable directly into the fetch URL path
     const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
     const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
       method: 'POST',
@@ -89,7 +90,6 @@ function CreateListing() {
     return fileData.secure_url; 
   };
 
-  // Removes individual gallery links when a user hits Delete
   const handleRemoveImage = (index) => {
     setFormData({
       ...formData,
@@ -97,10 +97,45 @@ function CreateListing() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting completed property structure to backend handler:", formData);
-    // You can call your axios or fetch routing function to your Express API right here
+    try {
+      if (formData.imageUrls.length < 1) {
+        return setError('You must upload at least one image!');
+      }
+      
+      if (+formData.regularPrice < +formData.discountedPrice) {
+        return setError('Discounted price must be lower than your regular price specifications!');
+      }
+
+      setLoading(true);
+      setError(false);
+
+      const res = await fetch('/api/listing/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          userRef: currentUser._id, // Cleanly passing your Redux authenticated user reference ID!
+        }),
+      });
+
+      const data = await res.json();
+      setLoading(false);
+
+      if (data.success === false) {
+        setError(data.message);
+        return;
+      }
+
+      navigate(`/listing/${data._id}`);
+
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -111,7 +146,6 @@ function CreateListing() {
         
         <form onSubmit={handleSubmit} className='flex flex-col md:flex-row gap-8 items-start'>
             
-            {/* LEFT SIDE COLUMN: Form Inputs */}
             <div className='flex flex-col gap-5 flex-1 w-full'>
                 <input 
                  type="text"
@@ -142,30 +176,47 @@ function CreateListing() {
                  value={formData.address}
                  required/>
                  
-                {/* Transaction type and amenity checkboxes */}
                 <div className='flex gap-6 flex-wrap py-2 border-y border-slate-100 my-1'>
                     <label htmlFor="sale" className='flex gap-2 items-center cursor-pointer font-semibold text-slate-600 hover:text-amber-500 transition-colors duration-200'>
-                        <input type="checkbox" id='sale' className='w-5 h-5 accent-emerald-600 cursor-pointer rounded-sm' onChange={handleChange} checked={formData.type === 'sale'} />
+                        <input type="checkbox" id='sale'
+                         className='w-5 h-5 accent-emerald-600 cursor-pointer rounded-sm'
+                         onChange={handleChange}
+                          checked={formData.type === 'sale'} />
                         <span>Sell</span>
                     </label>
 
                     <label htmlFor="rent" className='flex gap-2 items-center cursor-pointer font-semibold text-slate-600 hover:text-amber-500 transition-colors duration-200'>
-                        <input type="checkbox" id='rent' className='w-5 h-5 accent-emerald-600 cursor-pointer rounded-sm' onChange={handleChange} checked={formData.type === 'rent'} />
+                        <input type="checkbox"
+                        id='rent'
+                         className='w-5 h-5 accent-emerald-600 cursor-pointer rounded-sm'
+                        onChange={handleChange}
+                        checked={formData.type === 'rent'} />
                         <span>Rent</span>
                     </label>
 
                     <label htmlFor="parking" className='flex gap-2 items-center cursor-pointer font-semibold text-slate-600 hover:text-amber-500 transition-colors duration-200'>
-                        <input type="checkbox" id='parking' className='w-5 h-5 accent-emerald-600 cursor-pointer rounded-sm' onChange={handleChange} checked={formData.parking} />
+                        <input type="checkbox" id='parking'
+                         className='w-5 h-5 accent-emerald-600 cursor-pointer rounded-sm'
+                          onChange={handleChange}
+                          checked={formData.parking} />
                         <span>Parking Spot</span>
                     </label>
 
                     <label htmlFor="furnished" className='flex gap-2 items-center cursor-pointer font-semibold text-slate-600 hover:text-amber-500 transition-colors duration-200'>
-                        <input type="checkbox" id='furnished' className='w-5 h-5 accent-emerald-600 cursor-pointer rounded-sm' onChange={handleChange} checked={formData.furnished} />
+                        <input type="checkbox"
+                         id='furnished'
+                         className='w-5 h-5 accent-emerald-600 cursor-pointer rounded-sm'
+                          onChange={handleChange} 
+                          checked={formData.furnished} />
                         <span>Furnished</span>
                     </label>
 
                     <label htmlFor="offer" className='flex gap-2 items-center cursor-pointer font-semibold text-slate-600 hover:text-amber-500 transition-colors duration-200'>
-                        <input type="checkbox" id='offer' className='w-5 h-5 accent-emerald-600 cursor-pointer rounded-sm' onChange={handleChange} checked={formData.offer} />
+                        <input type="checkbox"
+                         id='offer'
+                          className='w-5 h-5 accent-emerald-600 cursor-pointer rounded-sm'
+                          onChange={handleChange}
+                           checked={formData.offer} />
                         <span>Offer</span>
                     </label>
                 </div>
@@ -218,7 +269,9 @@ function CreateListing() {
 
                     <div className='flex gap-3 items-center justify-between bg-white p-3 rounded-xl border border-slate-200 shadow-2xs'>
                       <div className='flex flex-col text-left leading-none'>
-                        <p className='text-xs font-bold text-slate-600 text-amber-600'>Discounted Price</p>
+                        <p className='text-xs font-bold text-slate-600'>
+                          Discounted <span className='text-amber-600'>Price</span>
+                        </p>
                         <span className='text-[10px] text-slate-400 font-medium mt-1'>($ / month)</span>
                       </div>
                       <input
@@ -284,11 +337,16 @@ function CreateListing() {
                   </div>
                 )}
                 
+                {error && (
+                  <p className='text-red-500 text-xs font-semibold mt-4 text-center bg-red-50 border border-red-100 p-2 rounded-xl'>{error}</p>
+                )}
+                
                 <button 
-                  type="submit"
-                  className='w-full mt-8 bg-linear-to-r from-amber-500 to-amber-600 text-white font-bold p-4 rounded-xl shadow-md hover:from-amber-600 hover:to-amber-700 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 uppercase text-sm tracking-widest'
+                  type="submit" 
+                  disabled={loading || uploading}
+                  className='w-full mt-8 bg-linear-to-r from-amber-500 to-amber-600 text-white font-bold p-4 rounded-xl shadow-md hover:from-amber-600 hover:to-amber-700 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] disabled:opacity-50 transition-all duration-200 uppercase text-sm tracking-widest'
                 >
-                    Submit Listing
+                    {loading ? 'Creating Listing...' : 'Submit Listing'}
                 </button>
             </div>
             
