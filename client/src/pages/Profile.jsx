@@ -317,37 +317,60 @@ function Profile() {
       </div>
 
       <button 
-      onClick={handleShowListings}
-      className='align-middle text-center my-2 text-yellow-400 w-full'>
-        Show Listings
+        onClick={handleShowListings}
+        className="w-full mt-4 py-3.5 bg-slate-900 text-amber-400 font-bold tracking-wider uppercase rounded-xl border border-emerald-500/30 hover:bg-slate-800 hover:text-white hover:border-amber-400 shadow-md hover:shadow-emerald-500/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 text-xs cursor-pointer"
+      >
+        Show Your Listings
       </button>
-      <p className='text-red-600 mt-5'>{ showListingsError ? "Error Showing Listings" : " "} </p>
 
-      {userListings &&
-      userListings.length > 0 && 
-      <div className="flex flex-col gap-4">
-        <h1 className='text-center text-2xl font-semibold mt-7'>YOUR LISTINGS</h1>
-      {userListings.map((listing) => (<div key={listing._id}
-      className='border rounded-lg p-3 flex justify-between items-center gap-4'>
-        <Link to={`listing/${listing._id}`}>
-          <img src={listing.imageUrls[0]}
-          className='h-16 w-16 rounded-lg object-contain'
-          alt="listing cover" />
-        </Link>
+      {showListingsError && (
+        <p className="text-center text-xs font-semibold text-rose-600 bg-rose-50 py-2.5 px-4 rounded-xl border border-rose-100 mt-4 shadow-xs animate-pulse">
+          Error Showing Listings. Please try again.
+        </p>
+      )}
 
-        <Link to={`listing/${listing._id}`}>
-        <p className='font-semibold hover:underline truncate flex-1'>{listing.name}</p>
-        </Link>
+      {userListings && userListings.length > 0 && (
+        <div className="flex flex-col gap-4 mt-8 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 shadow-inner">
+          <h1 className="text-center text-xs font-bold tracking-widest text-slate-400 uppercase pb-2 border-b border-slate-200/60">
+            Current Properties Managed
+          </h1>
+          
+          {userListings.map((listing) => (
+            <div 
+              key={listing._id}
+              className="border border-slate-200/60 bg-white p-3 flex justify-between items-center gap-4 rounded-xl shadow-xs hover:shadow-md hover:border-emerald-400/40 transition-all duration-200 group"
+            >
+              <Link to={`/listing/${listing._id}`} className="shrink-0 overflow-hidden rounded-lg bg-slate-100 border border-slate-100">
+                <img 
+                  src={listing.imageUrls[0]}
+                  className="h-16 w-20 object-cover group-hover:scale-105 transition duration-300"
+                  alt="listing cover" 
+                />
+              </Link>
 
-        <div className='flex flex-col items-center'>
-          <button className='text-red-600'>DELETE</button>
-          <button className='text-green-500'>UPDATE</button>
+              <Link to={`/listing/${listing._id}`} className="flex-1 min-w-0">
+                <p className="font-bold text-slate-700 group-hover:text-emerald-600 truncate uppercase text-sm transition-colors duration-200">
+                  {listing.name}
+                </p>
+                <span className="text-[10px] uppercase tracking-wider font-bold text-amber-500 block mt-0.5">
+                  Status: Published
+                </span>
+              </Link>
+
+              <div className="flex flex-col gap-1.5 shrink-0 items-end">
+                <button className="text-rose-500 hover:text-rose-700 text-[11px] font-bold tracking-wider uppercase transition-colors cursor-pointer hover:underline">
+                  Delete
+                </button>
+                <button className="text-emerald-600 hover:text-emerald-800 text-[11px] font-bold tracking-wider uppercase transition-colors cursor-pointer hover:underline">
+                  Edit
+                </button>
+              </div>
+
+            </div>
+          ))}
         </div>
-
-        </div>
-        ))}
-      </div> }
-    </div>
+      )}
+    </div> // Closes your parent page/fragment element container
   )
 }
 
