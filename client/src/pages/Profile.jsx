@@ -17,6 +17,8 @@ function Profile() {
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false)
   const [imageUploading, setImageUploading] = useState(false)
   const [imagePercent, setImagePercent] = useState(0)
+  const [showListingsError, setShowListingsError] = useState(false);
+  const [userListings, setUserListings] = useState([]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -164,6 +166,24 @@ function Profile() {
     }
   }
 
+  const handleShowListings = async () => {
+    try{
+      setShowListingsError(false)
+      const res = await fetch(`/api/user/listings/${currentUser._id}`);
+      const data = await res.json()
+
+      if(data.success === false){
+        setShowListingsError(true);
+        return;
+      }
+
+      setUserListings(data)
+    }
+    catch(error){
+      setShowListingsError(true);
+    }
+  }
+
   return (
     <div className="max-w-md mx-auto p-6 my-10">
       <h1 className="text-3xl font-bold text-slate-800 text-center mb-8 tracking-tight">
@@ -267,9 +287,9 @@ function Profile() {
 
         <Link 
           to={'/create-listing'}
-          className="inline-flex items-center justify-center text-center bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:bg-emerald-800 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-200 tracking-wide uppercase text-sm border border-emerald-800"
+          className="inline-flex items-center justify-center text-center bg-linear-to-r from-emerald-500/10 to-amber-400/10 hover:from-emerald-600 hover:to-amber-500 text-emerald-800 hover:text-white font-bold px-6 py-3.5 rounded-xl border border-emerald-500/20 hover:border-transparent shadow-xs hover:shadow-lg hover:shadow-emerald-600/20 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-500 ease-out tracking-wide uppercase text-s"
         >
-        Create Listing
+          Create Listing
         </Link>
         
       </form>
@@ -295,6 +315,38 @@ function Profile() {
           Sign Out
         </span>
       </div>
+
+      <button 
+      onClick={handleShowListings}
+      className='align-middle text-center my-2 text-yellow-400 w-full'>
+        Show Listings
+      </button>
+      <p className='text-red-600 mt-5'>{ showListingsError ? "Error Showing Listings" : " "} </p>
+
+      {userListings &&
+      userListings.length > 0 && 
+      <div className="flex flex-col gap-4">
+        <h1 className='text-center text-2xl font-semibold mt-7'>YOUR LISTINGS</h1>
+      {userListings.map((listing) => (<div key={listing._id}
+      className='border rounded-lg p-3 flex justify-between items-center gap-4'>
+        <Link to={`listing/${listing._id}`}>
+          <img src={listing.imageUrls[0]}
+          className='h-16 w-16 rounded-lg object-contain'
+          alt="listing cover" />
+        </Link>
+
+        <Link to={`listing/${listing._id}`}>
+        <p className='font-semibold hover:underline truncate flex-1'>{listing.name}</p>
+        </Link>
+
+        <div className='flex flex-col items-center'>
+          <button className='text-red-600'>DELETE</button>
+          <button className='text-green-500'>UPDATE</button>
+        </div>
+
+        </div>
+        ))}
+      </div> }
     </div>
   )
 }

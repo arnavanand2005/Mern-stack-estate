@@ -160,7 +160,7 @@ function CreateListing() {
 
                 <textarea
                  placeholder='Description'
-                 className='border border-slate-200 p-3 rounded-xl bg-white shadow-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all duration-200 min-h-[120px]'
+                 className='border border-slate-200 p-3 rounded-xl bg-white shadow-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all duration-200 min-h-30'
                  id='description'
                  onChange={handleChange}
                  value={formData.description}
@@ -321,7 +321,7 @@ function CreateListing() {
                 )}
 
                 {formData.imageUrls.length > 0 && (
-                  <div className='flex flex-col gap-2 mt-4 max-h-[200px] overflow-y-auto border-t pt-3 border-slate-100'>
+                  <div className='flex flex-col gap-2 mt-4 max-h-50 overflow-y-auto border-t pt-3 border-slate-100'>
                     {formData.imageUrls.map((url, index) => (
                       <div key={url} className='flex items-center justify-between p-2 border rounded-xl bg-slate-50/40 border-slate-100'>
                         <img src={url} alt="listing thumbnail preview" className='w-16 h-12 object-cover rounded-lg shadow-3xs' />
