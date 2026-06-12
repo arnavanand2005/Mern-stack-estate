@@ -111,15 +111,23 @@ function CreateListing() {
       setLoading(true);
       setError(false);
 
+      const submissionPayload = {
+        ...formData,
+        userRef: currentUser._id,
+      };
+
+      if (submissionPayload.type === 'sale') {
+        submissionPayload.discountedPrice = 0; 
+        submissionPayload.offer = false;
+
+      }
+
       const res = await fetch('/api/listing/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          userRef: currentUser._id, // Cleanly passing your Redux authenticated user reference ID!
-        }),
+        body: JSON.stringify(submissionPayload), 
       });
 
       const data = await res.json();
@@ -211,14 +219,17 @@ function CreateListing() {
                         <span>Furnished</span>
                     </label>
 
-                    <label htmlFor="offer" className='flex gap-2 items-center cursor-pointer font-semibold text-slate-600 hover:text-amber-500 transition-colors duration-200'>
-                        <input type="checkbox"
-                         id='offer'
-                          className='w-5 h-5 accent-emerald-600 cursor-pointer rounded-sm'
-                          onChange={handleChange}
-                           checked={formData.offer} />
-                        <span>Offer</span>
-                    </label>
+                    {/* 🎯 UI UPDATE: Only render the Offer option if it is NOT for full asset sale */}
+                    {formData.type !== 'sale' && (
+                      <label htmlFor="offer" className='flex gap-2 items-center cursor-pointer font-semibold text-slate-600 hover:text-amber-500 transition-colors duration-200'>
+                          <input type="checkbox"
+                           id='offer'
+                            className='w-5 h-5 accent-emerald-600 cursor-pointer rounded-sm'
+                            onChange={handleChange}
+                             checked={formData.offer} />
+                          <span>Offer</span>
+                      </label>
+                    )}
                 </div>
 
                 <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2'>
@@ -253,7 +264,11 @@ function CreateListing() {
                     <div className='flex gap-3 items-center justify-between bg-white p-3 rounded-xl border border-slate-200 shadow-2xs'>
                       <div className='flex flex-col text-left leading-none'>
                         <p className='text-xs font-bold text-slate-600'>Regular Price</p>
-                        <span className='text-[10px] text-slate-400 font-medium mt-1'>($ / month)</span>
+                        
+                        {/* 🎯 UI UPDATE: Show ($ / month) only if it is NOT on sale mode */}
+                        {formData.type !== 'sale' && (
+                          <span className='text-[10px] text-slate-400 font-medium mt-1'>($ / month)</span>
+                        )}
                       </div>
                       <input
                         type="number"
@@ -267,24 +282,27 @@ function CreateListing() {
                       />
                     </div>
 
-                    <div className='flex gap-3 items-center justify-between bg-white p-3 rounded-xl border border-slate-200 shadow-2xs'>
-                      <div className='flex flex-col text-left leading-none'>
-                        <p className='text-xs font-bold text-slate-600'>
-                          Discounted <span className='text-amber-600'>Price</span>
-                        </p>
-                        <span className='text-[10px] text-slate-400 font-medium mt-1'>($ / month)</span>
+                    {/* 🎯 UI UPDATE: Completely hide the Discount input card layout frame entirely when selling */}
+                    {formData.type !== 'sale' && (
+                      <div className='flex gap-3 items-center justify-between bg-white p-3 rounded-xl border border-slate-200 shadow-2xs'>
+                        <div className='flex flex-col text-left leading-none'>
+                          <p className='text-xs font-bold text-slate-600'>
+                            Discounted <span className='text-amber-600'>Price</span>
+                          </p>
+                          <span className='text-[10px] text-slate-400 font-medium mt-1'>($ / month)</span>
+                        </div>
+                        <input
+                          type="number"
+                          id='discountedPrice'
+                          className='w-28 text-center font-bold text-slate-700 bg-slate-50 p-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20' 
+                          min={0}
+                          max={1000000}
+                          required={formData.type !== 'sale'}
+                          onChange={handleChange}
+                          value={formData.discountedPrice}
+                        />
                       </div>
-                      <input
-                        type="number"
-                        id='discountedPrice'
-                        className='w-28 text-center font-bold text-slate-700 bg-slate-50 p-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20' 
-                        min={0}
-                        max={1000000}
-                        required
-                        onChange={handleChange}
-                        value={formData.discountedPrice}
-                      />
-                    </div>
+                    )}
                 </div>
             </div>
 
