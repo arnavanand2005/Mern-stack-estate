@@ -184,6 +184,22 @@ function Profile() {
     }
   }
 
+  const handleListingDelete = async(listingId) => {
+    try{
+      const res = await fetch(`/api/listing/delete/${listingId}` , {
+        method : 'DELETE'
+      });
+      const data = await res.json()
+      if (data.success===false){
+        console.log(data.message)
+        return;
+      }
+      setUserListings((prev) => prev.filter((listing) => listing._id !== listingId));
+    }
+    catch (error){
+      console.log(error.message)
+    }
+  }
   return (
     <div className="max-w-md mx-auto p-6 my-10">
       <h1 className="text-3xl font-bold text-slate-800 text-center mb-8 tracking-tight">
@@ -358,7 +374,9 @@ function Profile() {
               </Link>
 
               <div className="flex flex-col gap-1.5 shrink-0 items-end">
-                <button className="text-rose-500 hover:text-rose-700 text-[11px] font-bold tracking-wider uppercase transition-colors cursor-pointer hover:underline">
+                <button
+                className="text-rose-500 hover:text-rose-700 text-[11px] font-bold tracking-wider uppercase transition-colors cursor-pointer hover:underline"
+                onClick={() => handleListingDelete(listing._id)}>
                   Delete
                 </button>
                 <button className="text-emerald-600 hover:text-emerald-800 text-[11px] font-bold tracking-wider uppercase transition-colors cursor-pointer hover:underline">
@@ -370,7 +388,7 @@ function Profile() {
           ))}
         </div>
       )}
-    </div> // Closes your parent page/fragment element container
+    </div> 
   )
 }
 
