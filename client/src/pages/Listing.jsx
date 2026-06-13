@@ -145,11 +145,11 @@ function Listing() {
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div className="bg-white/40 backdrop-blur-md border border-white/40 p-4 rounded-2xl shadow-lg flex flex-col items-center justify-center text-center group hover:animate-jiggle cursor-pointer hover:border-amber-400/60 transition-all duration-300">
-                      <FaBed className="text-amber-500 text-xl mb-2 transition-transform group-hover:scale-110" />
-                      <span className="text-slate-600 text-[9px] font-black uppercase tracking-widest mb-0.5">Architecture</span>
-                      <span className="text-slate-950 font-black text-sm">{listing.bedrooms} Beds</span>
-                    </div>
+                  <div className="bg-white/40 backdrop-blur-md border border-white/40 p-4 rounded-2xl shadow-lg flex flex-col items-center justify-center text-center group hover:animate-jiggle cursor-pointer transition-all duration-300 hover:border-green-500">
+                    <FaBed className="text-green-500 text-xl mb-2 transition-transform group-hover:scale-110" />
+                    <span className="text-slate-600 text-[9px] font-black uppercase tracking-widest mb-0.5">Architecture</span>
+                    <span className="text-slate-950 font-black text-sm">{listing.bedrooms} Beds</span>
+                </div>
 
                     <div className="bg-white/40 backdrop-blur-md border border-white/40 p-4 rounded-2xl shadow-lg flex flex-col items-center justify-center text-center group hover:animate-jiggle cursor-pointer hover:border-amber-400/60 transition-all duration-300">
                       <FaBath className="text-amber-500 text-xl mb-2 transition-transform group-hover:scale-110" />
@@ -157,13 +157,13 @@ function Listing() {
                       <span className="text-slate-950 font-black text-sm">{listing.bathrooms} Baths</span>
                     </div>
 
-                    <div className="bg-white/40 backdrop-blur-md border border-white/40 p-4 rounded-2xl shadow-lg flex flex-col items-center justify-center text-center group hover:animate-jiggle cursor-pointer hover:border-amber-400/60 transition-all duration-300">
-                      <FaCar className={`text-xl mb-2 transition-transform group-hover:scale-110 ${listing.parking ? 'text-amber-500' : 'text-slate-500/40'}`} />
-                      <span className="text-slate-600 text-[9px] font-black uppercase tracking-widest mb-0.5">Vehicle Bay</span>
-                      <span className={`font-black text-sm uppercase ${listing.parking ? 'text-slate-950' : 'text-slate-500/60'}`}>
+                <div className="bg-white/40 backdrop-blur-md border border-white/40 p-4 rounded-2xl shadow-lg flex flex-col items-center justify-center text-center group hover:animate-jiggle cursor-pointer transition-all duration-300 hover:border-green-500">
+                    <FaCar className={`text-xl mb-2 transition-transform group-hover:scale-110 ${listing.parking ? 'text-green-500' : 'text-slate-500/40'}`} />
+                    <span className="text-slate-600 text-[9px] font-black uppercase tracking-widest mb-0.5">Vehicle Bay</span>
+                    <span className={`font-black text-sm uppercase ${listing.parking ? 'text-slate-950' : 'text-slate-500/60'}`}>
                         {listing.parking ? 'Garage' : 'None'}
-                      </span>
-                    </div>
+                    </span>
+                    </div>      
 
                     <div className="bg-white/40 backdrop-blur-md border border-white/40 p-4 rounded-2xl shadow-lg flex flex-col items-center justify-center text-center group hover:animate-jiggle cursor-pointer hover:border-amber-400/60 transition-all duration-300">
                       <FaCouch className={`text-xl mb-2 transition-transform group-hover:scale-110 ${listing.furnished ? 'text-amber-500' : 'text-slate-500/40'}`} />
