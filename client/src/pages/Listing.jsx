@@ -6,11 +6,15 @@ import { FaBed, FaBath, FaCar, FaCouch, FaMapMarkerAlt, FaShieldAlt } from 'reac
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { useSelector } from 'react-redux';
+import Contact from '../Components/Contact';
 
 function Listing() {
     const [listing, setListing] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
+    const [contact, setContact] = useState(false);
+    const { currentUser } = useSelector((state) => state.user);
 
     const params = useParams();
 
@@ -75,7 +79,7 @@ function Listing() {
                         style={{ imageRendering: '-webkit-optimize-contrast', transform: 'translateZ(0)' }}
                         className="w-full h-full object-cover select-none transition-transform duration-[1500ms] ease-out group-hover:scale-101 brightness-[0.97] contrast-[1.03] saturate-[1.03]"
                         loading="eager"
-                        fetchpriority="high"
+                        fetchPriority="high"
                         decoding="async"
                       />
                     </SwiperSlide>
@@ -194,9 +198,14 @@ function Listing() {
                     </div>
                     <hr className="border-white/20 my-2" />
                     
-                    <button className="w-full bg-slate-950 text-amber-400 font-black p-4 rounded-xl shadow-lg hover:bg-amber-400 hover:text-slate-950 active:scale-[0.97] transition-all duration-300 text-xs tracking-widest uppercase border border-slate-900">
-                      Request Listing Terms
+
+                    {currentUser && listing.userRef !== currentUser._id && !contact && (
+                    <button onClick={() => setContact(true)} className="w-full bg-slate-950 text-amber-400 font-black p-4 rounded-xl shadow-lg hover:bg-amber-400 hover:text-slate-950 active:scale-[0.97] transition-all duration-300 text-xs tracking-widest uppercase border border-slate-900">
+                      Contact Landlord
                     </button>
+                    )}
+
+                    {contact && <Contact listing={listing}/>}
                   </div>
                 </div>
 
