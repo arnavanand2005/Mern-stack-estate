@@ -1,11 +1,31 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FaSearch } from "react-icons/fa";
-import { Link } from 'react-router-dom';
+import { Link , useNavigate} from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useState } from 'react';
 
 
 export default function Header() {
-  const { currentUser }= useSelector(state => state.user)
+  const { currentUser }= useSelector(state => state.user);
+  const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const urlParams = new URLSearchParams(window.location.search)
+    urlParams.set('searchTerm',searchTerm);
+    const searchQuery = urlParams.toString()
+    navigate(`/search?${searchQuery}`);
+  }
+
+  useEffect(() => {
+    const urlParams = URLSearchParams(location.search)
+    const searchTermFromUrl = urlParams.get('searchTerm');
+    if (searchTermFromUrl){
+      setSearchTerm(searchTermFromUrl)
+    }
+  },[location.search])
+
   console.log(currentUser);
   return (
     <header className="bg-slate-200 shadow-md">
@@ -20,13 +40,17 @@ export default function Header() {
             <span className="text-green-500">Estates</span>
           </h1>
         </Link>
-          <form className="flex items-center bg-gray-200 px-4 py-2 rounded-full shadow-sm">
+          <form onSubmit={handleSubmit} className="flex items-center bg-gray-200 px-4 py-2 rounded-full shadow-sm">
           <input
             type="text"
             placeholder="Search..."
             className="bg-transparent focus:outline-none w-24 sm:w-64 text-slate-700"
+            onChange={(e) => setSearchTerm(e.target.value)} 
+            value={searchTerm}
           />
-          <FaSearch className="text-gray-500 cursor-pointer hover:text-gray-700 transition-colors" />
+          <button>
+            <FaSearch className="text-gray-500 cursor-pointer hover:text-gray-700 transition-colors" />
+          </button>
         </form>
 
           <ul className="flex items-center gap-4 md:gap-6 text-sm md:text-lg font-medium">
