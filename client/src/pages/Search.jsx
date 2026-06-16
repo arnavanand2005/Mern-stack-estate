@@ -6,6 +6,8 @@ export default function Search() {
     const navigate = useNavigate();
     const location = useLocation(); 
 
+    const [showMore, setShowMore] = useState(false)
+
     const [sidebardata, setSidebardata] = useState({
         searchTerm : '',
         type : 'all',
@@ -64,7 +66,11 @@ export default function Search() {
     
                 const data = await res.json();
                 console.log("🎯 RAW DATA RECEIVED FROM YOUR BACKEND:", data); 
-                
+                if(data.length > 8){
+                    setShowMore(true)
+                } else {
+                    setShowMore(false)
+                }
                 setListings(data);
                 setLoading(false);
             } catch (error) {
@@ -74,7 +80,7 @@ export default function Search() {
         };
 
         fetchListings();
-    }, [location.search]); // 🎯 FIXED: Re-added missing closing brackets to heal syntax!
+    }, [location.search]); 
 
     console.log(sidebardata);
     
@@ -114,6 +120,20 @@ export default function Search() {
         urlParams.set('order', sidebardata.order)
         const searchQuery = urlParams.toString()
         navigate(`/search?${searchQuery}`)
+    }
+
+    const onShowMoreClick = async () => {
+         const numberOfListings = listings.length;
+         const startIndex = numberOfListings;
+         const urlParams = new URLSearchParams(location.search);
+         urlParams.set('startIndex', startIndex)
+         const searchQuery = urlParams.toString()
+         const res = await fetch(`/api/listing/get?${searchQuery}`)
+         const data = await res.json()
+         if(data.length < 9){
+             setShowMore(false)
+         }
+         setListings([...listings,...data])
     }
 
   return (
@@ -203,25 +223,38 @@ export default function Search() {
             </form>
         </div>
 
-        <div className="flex-1 p-7 space-y-6 bg-slate-100">
-            <h1 className="text-3xl font-black text-slate-950 tracking-tight uppercase border-b border-slate-200 pb-4">
-                Listing Results
-            </h1>
-            <div className="flex flex-wrap gap-4 justify-start items-start">
-                {loading && (
-                    <p className="text-xl text-slate-700 font-bold w-full text-center py-10 animate-pulse">
-                        Scanning Channels...
-                    </p>
-                )}
-                {!loading && listings.length === 0 && (
-                    <p className="text-xl text-slate-600 font-semibold w-full text-center py-10">
-                        No listings found!
-                    </p>
-                )}
-                {!loading && listings && listings.map((listing) => (
-                <ListingItem key={listing._id} listing={listing}/>
-                ))}
+        <div className="flex-1 p-7 space-y-6 bg-slate-100 flex flex-col justify-between">
+            <div className="space-y-6">
+                <h1 className="text-3xl font-black text-slate-950 tracking-tight uppercase border-b border-slate-200 pb-4">
+                    Listing Results
+                </h1>
+                <div className="flex flex-wrap gap-4 justify-start items-start">
+                    {loading && (
+                        <p className="text-xl text-slate-700 font-bold w-full text-center py-10 animate-pulse">
+                            Scanning Channels...
+                        </p>
+                    )}
+                    {!loading && listings.length === 0 && (
+                        <p className="text-xl text-slate-600 font-semibold w-full text-center py-10">
+                            No listings found!
+                        </p>
+                    )}
+                    {!loading && listings && listings.map((listing) => (
+                        <ListingItem key={listing._id} listing={listing}/>
+                    ))}
+                </div>
             </div>
+
+            {showMore && (
+                <div className="w-full flex justify-center pt-8">
+                    <button 
+                        onClick={onShowMoreClick}
+                        className='bg-slate-200 hover:bg-green-700 text-slate-800 hover:text-white border border-slate-300 hover:border-green-700 text-xs font-black tracking-widest uppercase py-3.5 px-10 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 active:scale-95 text-center'
+                    >
+                        Load More Records
+                    </button>
+                </div>
+            )}
         </div>
    </div>
   )
