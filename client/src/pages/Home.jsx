@@ -5,7 +5,6 @@ import LineWaves from './LineWaves';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
-// Import Swiper styling sets
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -46,7 +45,6 @@ export default function Home() {
   return (
     <div className='flex flex-col min-h-screen bg-slate-100 font-sans antialiased selection:bg-amber-400 selection:text-slate-900 relative overflow-hidden'>
       
-      {/* 📡 LineWaves Layer */}
       <div className='absolute top-0 left-0 w-full h-[650px] pointer-events-none opacity-80 z-0'>
         <LineWaves
           speed={0.6}
@@ -105,10 +103,8 @@ export default function Home() {
                   style={{ background: `url(${listing.imageUrls?.[0]}) center no-repeat`, backgroundSize: 'cover' }}
                   className='h-full w-full flex items-end p-8 bg-slate-900/40 relative'
                 >
-                  {/* Subtle scrim overlay layer for readability protection */}
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/20 to-transparent z-0" />
                   
-                  {/* Text Details Box inside Slide */}
                   <div className="relative z-10 text-left bg-slate-900/70 backdrop-blur-md p-6 rounded-xl border border-slate-700/50 max-w-lg">
                     <span className="text-[10px] font-black tracking-widest text-amber-400 uppercase bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">Strategic Offer</span>
                     <h2 className="text-xl font-black text-white uppercase tracking-tight mt-2 truncate">{listing.name}</h2>
