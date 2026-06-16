@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'; 
+import ListingItem from './ListingItem';
 
 export default function Search() {
     const navigate = useNavigate();
@@ -202,12 +203,11 @@ export default function Search() {
             </form>
         </div>
 
-        {/* Dynamic Mapping Layout */}
-        <div className="flex-1 p-7 space-y-6">
+        <div className="flex-1 p-7 space-y-6 bg-slate-100">
             <h1 className="text-3xl font-black text-slate-950 tracking-tight uppercase border-b border-slate-200 pb-4">
                 Listing Results
             </h1>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 justify-start items-start">
                 {loading && (
                     <p className="text-xl text-slate-700 font-bold w-full text-center py-10 animate-pulse">
                         Scanning Channels...
@@ -219,13 +219,7 @@ export default function Search() {
                     </p>
                 )}
                 {!loading && listings && listings.map((listing) => (
-                    <div key={listing._id} className="bg-white shadow-md rounded-lg p-4 w-full sm:w-[330px] border border-slate-200">
-                        <p className="font-bold text-lg text-slate-800 truncate">{listing.name}</p>
-                        <p className="text-sm text-slate-500 truncate">{listing.address}</p>
-                        <p className="text-slate-700 font-black mt-2 text-md">
-                            ${listing.regularPrice?.toLocaleString()}
-                        </p>
-                    </div>
+                <ListingItem key={listing._id} listing={listing}/>
                 ))}
             </div>
         </div>
