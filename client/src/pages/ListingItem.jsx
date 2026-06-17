@@ -4,7 +4,7 @@ import { MdLocationOn } from 'react-icons/md'
 
 export default function ListingItem({ listing }) {
   return (
-    <div className='bg-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden rounded-xl w-full sm:w-[330px] md:w-[280px] border border-slate-300 hover:border-amber-400 group flex flex-col'>
+    <div className='bg-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden rounded-xl w-full sm:w-82.5 md:w-70 border border-slate-300 hover:border-amber-400 group flex flex-col'>
        <Link to={`/listing/${listing._id}`} className="flex flex-col h-full">
             <div className="overflow-hidden relative shrink-0">
                 <img
@@ -30,7 +30,7 @@ export default function ListingItem({ listing }) {
                         </p>
                     </div>
 
-                    <p className='text-xs text-slate-600 font-medium line-clamp-2 leading-relaxed min-h-[32px]'>
+                    <p className='text-xs text-slate-600 font-medium line-clamp-2 leading-relaxed min-h-8'>
                         {listing.description}
                     </p>
                 </div>

@@ -45,7 +45,7 @@ export default function Home() {
   return (
     <div className='flex flex-col min-h-screen bg-slate-100 font-sans antialiased selection:bg-amber-400 selection:text-slate-900 relative overflow-hidden'>
       
-      <div className='absolute top-0 left-0 w-full h-[650px] pointer-events-none opacity-80 z-0'>
+      <div className='absolute top-0 left-0 w-full h-162.5 pointer-events-none opacity-80 z-0'>
         <LineWaves
           speed={0.6}
           innerLineCount={45}       
@@ -60,10 +60,9 @@ export default function Home() {
           enableMouseInteraction={true}
           mouseInfluence={3.0}      
         />
-        <div className='absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-slate-100 via-slate-100/80 to-transparent' />
+        <div className='absolute bottom-0 left-0 w-full h-32 bg-linear-to-t from-slate-100 via-slate-100/80 to-transparent' />
       </div>     
 
-      {/* Hero Header Area */}
       <div className='max-w-6xl mx-auto px-4 py-20 flex flex-col gap-8 items-center text-center relative z-10'>
         <div className='space-y-2 animate-[bounce_3s_infinite] [animation-timing-function:ease-in-out]'>
           <h1 className='text-slate-700 text-4xl sm:text-6xl font-bold uppercase tracking-tight leading-none'>
@@ -95,7 +94,7 @@ export default function Home() {
             navigation
             pagination={{ clickable: true }}
             autoplay={{ delay: 5000, disableOnInteraction: false }}
-            className='h-[400px] rounded-2xl overflow-hidden shadow-xl border border-slate-200'
+            className='h-100 rounded-2xl overflow-hidden shadow-xl border border-slate-200'
           >
             {offerListings.map((listing) => (
               <SwiperSlide key={listing._id}>
@@ -103,7 +102,7 @@ export default function Home() {
                   style={{ background: `url(${listing.imageUrls?.[0]}) center no-repeat`, backgroundSize: 'cover' }}
                   className='h-full w-full flex items-end p-8 bg-slate-900/40 relative'
                 >
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/20 to-transparent z-0" />
+                  <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-slate-900/20 to-transparent z-0" />
                   
                   <div className="relative z-10 text-left bg-slate-900/70 backdrop-blur-md p-6 rounded-xl border border-slate-700/50 max-w-lg">
                     <span className="text-[10px] font-black tracking-widest text-amber-400 uppercase bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">Strategic Offer</span>
